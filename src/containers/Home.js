@@ -1,16 +1,27 @@
 import React, { Component } from "react";
-import Wrapper from "../components/common/Wrapper";
+
 import Header from "../components/Header";
-import ContentsContainer from "../containers/ContentsContainer";
+import PostListContainer from "../containers/PostListContainer";
 
 class Home extends Component {
+  state = {
+    // '스크랩한 것만 보기' 체크 상태를 나타냅니다.
+    isMyList: false
+  };
+
+  // 체크시 실행되는 토글 핸들러 입니다.
+  toggleHandler = () => {
+    this.setState(prevState => {
+      return { isMyList: !prevState.isMyList };
+    });
+  };
+
   render() {
+    const { isMyList } = this.state;
     return (
       <>
-        <Header />
-        <Wrapper>
-          <ContentsContainer />
-        </Wrapper>
+        <Header toggleHandler={this.toggleHandler} isMyList={isMyList} />
+        <PostListContainer isMyList={isMyList} />
       </>
     );
   }

@@ -1,9 +1,9 @@
 import React, { Component } from "react";
-import Contents from "../components/Contents";
-// import updateObject from '../lib/utility/updateObject';
 import axios from "axios";
 
-class ContentsContainer extends Component {
+import PostList from "../components/PostList";
+
+class PostListContainer extends Component {
   state = {
     loading: true,
     loadCount: 1,
@@ -12,25 +12,49 @@ class ContentsContainer extends Component {
   };
 
   componentDidMount() {
-    // 페이지의 아랫부분까지 스크롤이 내려가면, 리스트 로드 이벤트를 실행합니다.
-    this.loadHandler();
-    window.addEventListener("scroll", () => {
-      if (
-        window.innerHeight + window.scrollY + 68 >=
-        document.body.offsetHeight
-      ) {
-        this.loadHandler();
-      }
-    });
+    const { isMyList } = this.props;
 
     // localStorage에서 스크랩한 리스트를 가져옵니다.
     const list = JSON.parse(localStorage.getItem("scrapList"));
     if (list) {
       this.setState({ scrapArr: list });
     }
+
+    // '스크랩한 것만 보기' 체크가 되어있지 않을 때만, 일반 리스트를 가져옵니다.
+    if (!isMyList) {
+      // 페이지의 아랫부분까지 스크롤이 내려가면, 리스트 로드 이벤트를 실행합니다.
+      this.loadHandler();
+      window.addEventListener("scroll", () => {
+        if (
+          window.innerHeight + window.scrollY + 68 >=
+          document.body.offsetHeight
+        ) {
+          this.loadHandler();
+        }
+      });
+    }
   }
 
-  // [리스트 로드 이벤트] - 로드 할 때마다 카운트를 추가합니다.
+  // 이전 prop과 현재 prop이 다를 경우 실행됩니다.
+  componentDidUpdate(prevProps) {
+    const { isMyList } = this.props;
+    if (prevProps.isMyList !== isMyList) {
+      if (!isMyList) {
+        // 페이지의 아랫부분까지 스크롤이 내려가면, 리스트 로드 이벤트를 실행합니다.
+        this.loadHandler();
+        window.addEventListener("scroll", () => {
+          if (
+            window.innerHeight + window.scrollY + 68 >=
+            document.body.offsetHeight
+          ) {
+            this.loadHandler();
+          }
+        });
+      }
+    }
+  }
+
+  // 일반 리스트 로드 - 로드 할 때마다 카운트를 추가합니다.
   loadHandler() {
     this.setState({ loading: true });
     const { loadCount } = this.state;
@@ -60,7 +84,6 @@ class ContentsContainer extends Component {
     this.setState({
       scrapArr: scrapArr.concat(postInfo)
     });
-
     this.persistData(scrapArr.concat(postInfo));
   };
 
@@ -73,7 +96,6 @@ class ContentsContainer extends Component {
     this.setState({
       scrapArr: newArr
     });
-
     this.persistData(newArr);
   };
 
@@ -84,9 +106,11 @@ class ContentsContainer extends Component {
 
   render() {
     const { list, scrapArr } = this.state;
+    const { isMyList } = this.props;
     return (
-      <Contents
-        list={list}
+      <PostList
+        // '스크랩한 것만 보기' 체크 상태에 따라 다른 리스트를 전달합니다.
+        list={!isMyList ? list : scrapArr}
         scrapArr={scrapArr}
         savePostHandler={this.savePostHandler}
         deletePostHandler={this.deletePostHandler}
@@ -95,4 +119,4 @@ class ContentsContainer extends Component {
   }
 }
 
-export default ContentsContainer;
+export default PostListContainer;
