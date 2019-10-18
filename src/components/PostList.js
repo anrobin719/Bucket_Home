@@ -13,6 +13,7 @@ const PostList = ({ list, scrapArr, savePostHandler, deletePostHandler }) => {
         userImg={post.profile_image_url || post.userImg}
         userName={post.nickname || post.userName}
         img={post.image_url || post.img}
+        desc={post.description}
         scrapArr={scrapArr}
         savePostHandler={savePostHandler}
         deletePostHandler={deletePostHandler}
@@ -27,11 +28,12 @@ const PostList = ({ list, scrapArr, savePostHandler, deletePostHandler }) => {
 };
 
 const PostListBox = styled.main`
-  margin-top: 68px;
+  padding-top: 68px;
+  padding-bottom: 68px;
   width: 100%;
-  display: flex;
-  justify-content: space-between;
-  flex-flow: wrap;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-gap: 20px;
 `;
 
 export default PostList;
