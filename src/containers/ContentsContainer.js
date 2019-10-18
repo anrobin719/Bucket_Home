@@ -5,16 +5,15 @@ import axios from "axios";
 
 class ContentsContainer extends Component {
   state = {
-    list: [],
+    loading: true,
     loadCount: 1,
-    loading: true
+    list: [],
+    scrapArr: []
   };
 
-  // 페이지의 아랫부분까지 스크롤이 내려가면, 리스트 로드 이벤트를 실행합니다.
   componentDidMount() {
+    // 페이지의 아랫부분까지 스크롤이 내려가면, 리스트 로드 이벤트를 실행합니다.
     this.loadHandler();
-
-    console.log(window.innerHeight);
     window.addEventListener("scroll", () => {
       if (
         window.innerHeight + window.scrollY + 68 >=
@@ -23,6 +22,12 @@ class ContentsContainer extends Component {
         this.loadHandler();
       }
     });
+
+    // localStorage에서 스크랩한 리스트를 가져옵니다.
+    const list = JSON.parse(localStorage.getItem("scrapList"));
+    if (list) {
+      this.setState({ scrapArr: list });
+    }
   }
 
   // [리스트 로드 이벤트] - 로드 할 때마다 카운트를 추가합니다.
@@ -49,21 +54,43 @@ class ContentsContainer extends Component {
       });
   }
 
+  // 스크랩 - 기존 스크랩 리스트에 추가해 업데이트 합니다.
+  savePostHandler = postInfo => {
+    const { scrapArr } = this.state;
+    this.setState({
+      scrapArr: scrapArr.concat(postInfo)
+    });
+
+    this.persistData(scrapArr.concat(postInfo));
+  };
+
+  // 스크랩 취소 - 기존 스크랩 리스트에서 제외한 뒤 업데이트 합니다.
+  deletePostHandler = id => {
+    const { scrapArr } = this.state;
+    const newArr = scrapArr.slice();
+    const index = newArr.findIndex(p => p.postId === id);
+    newArr.splice(index, 1);
+    this.setState({
+      scrapArr: newArr
+    });
+
+    this.persistData(newArr);
+  };
+
+  // 스크랩 리스트를 localStorage에 저장합니다.
+  persistData = newArr => {
+    localStorage.setItem("scrapList", JSON.stringify(newArr));
+  };
+
   render() {
-    const { list } = this.state;
+    const { list, scrapArr } = this.state;
     return (
-      <>
-        <div
-          ref="myscroll"
-          style={{
-            height: "auto",
-            overflow: "auto",
-            outline: "1px solid red"
-          }}
-        >
-          <Contents list={list} />
-        </div>
-      </>
+      <Contents
+        list={list}
+        scrapArr={scrapArr}
+        savePostHandler={this.savePostHandler}
+        deletePostHandler={this.deletePostHandler}
+      />
     );
   }
 }
