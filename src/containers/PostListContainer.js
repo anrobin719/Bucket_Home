@@ -107,6 +107,7 @@ class PostListContainer extends Component {
       <PostList
         // '스크랩한 것만 보기' 체크 상태에 따라 다른 리스트를 전달합니다.
         list={!isMyList ? list : scrapArr}
+        isMyList={isMyList}
         scrapArr={scrapArr}
         savePostHandler={this.savePostHandler}
         deletePostHandler={this.deletePostHandler}

@@ -24,8 +24,9 @@ class Post extends Component {
   }
 
   // 스크랩 버튼 클릭 시 실행되는 핸들러입니다.
-  toggleHandler = (postId, userImg, userName, img) => {
+  toggleHandler = (postId, userImg, userName, img, e) => {
     const { isActive } = this.state;
+    const { isMyList } = this.props;
     // active 상태에 따라 버튼 이미지를 토글합니다.
     this.setState(prevState => {
       return { isActive: !prevState.isActive };
@@ -35,7 +36,19 @@ class Post extends Component {
       const postInfo = { postId, userImg, userName, img };
       this.props.savePostHandler(postInfo);
     } else {
-      this.props.deletePostHandler(postId);
+      // 스크랩 목록에서 취소한다면, 자연스러운 효과로 삭제되도록 합니다.
+      if (isMyList) {
+        setTimeout(() => this.props.deletePostHandler(postId), 200);
+
+        const cardEl = e.target.closest("article");
+        cardEl.style.cssText = `
+          transition: all .3s ease;
+          transform: scale(.1);
+          opacity: 0;
+        `;
+      } else {
+        this.props.deletePostHandler(postId);
+      }
     }
   };
 
@@ -52,7 +65,9 @@ class Post extends Component {
           <div>
             <img src={img} alt="home interior" />
           </div>
-          <span onClick={() => this.toggleHandler(id, userImg, userName, img)}>
+          <span
+            onClick={e => this.toggleHandler(id, userImg, userName, img, e)}
+          >
             <ScrapBtnOn />
             <ScrapBtn />
           </span>
@@ -62,6 +77,7 @@ class Post extends Component {
   }
 }
 
+// 포스트 카드 등장시 사용되는 애니메이션입니다.
 const fadeIn = keyframes`
   0% {
     opacity: 0;
@@ -73,6 +89,7 @@ const fadeIn = keyframes`
   }
 `;
 
+// 활성화 버튼 클릭시 사용되는 애니메이션입니다.
 const active = keyframes`
   0% {
     opacity: 0;
@@ -87,6 +104,8 @@ const active = keyframes`
     transform: scale(1.4);
   }
 `;
+
+// 활성화 버튼 클릭시 사용되는 애니메이션입니다.
 const sizeUp = keyframes`
   0% {
     transform: scale(1.4);
@@ -134,6 +153,7 @@ const ImgBox = styled.div`
       width: 100%;
       height: 100%;
     }
+    // hover 시, 간단한 설명이 보이도록 구현하였습니다.
     &:hover {
       &::before {
         opacity: 1;
@@ -155,23 +175,23 @@ const ImgBox = styled.div`
         transition: all .5s ease-in;
       }
     }
-    
   }
+  // 스크랩 버튼 박스입니다.
   span {
     cursor: pointer;
-
     svg {
       position: absolute;
       z-index: 99;
       right: 1rem;
       bottom: 1.2rem;
       transform: scale(1.4);
-
+      // 스크랩 활성화 버튼입니다.
       &:first-child {
         opacity: 0;
         animation: ${props => props.isActive && active} 0.2s linear
             forwards;
       }
+      // 스크랩 비활성화 버튼입니다.
       &:nth-child(2) {
         animation: ${props => props.isActive && sizeUp} 0.2s linear
             forwards;

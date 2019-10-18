@@ -3,7 +3,13 @@ import Post from "./Post";
 import Wrapper from "../components/common/Wrapper";
 import styled from "styled-components";
 
-const PostList = ({ list, scrapArr, savePostHandler, deletePostHandler }) => {
+const PostList = ({
+  list,
+  isMyList,
+  scrapArr,
+  savePostHandler,
+  deletePostHandler
+}) => {
   // list를 각각 Post 컴포넌트로 랜더링합니다.
   const postList = list.map(post => {
     return (
@@ -14,6 +20,7 @@ const PostList = ({ list, scrapArr, savePostHandler, deletePostHandler }) => {
         userName={post.nickname || post.userName}
         img={post.image_url || post.img}
         desc={post.description}
+        isMyList={isMyList}
         scrapArr={scrapArr}
         savePostHandler={savePostHandler}
         deletePostHandler={deletePostHandler}
