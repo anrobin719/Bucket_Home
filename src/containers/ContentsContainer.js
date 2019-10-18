@@ -1,39 +1,30 @@
 import React, { Component } from "react";
 import Contents from "../components/Contents";
+import axios from "axios";
 
 class ContentsContainer extends Component {
+  state = {
+    list: []
+  };
+  componentDidMount() {
+    const url =
+      "https://s3.ap-northeast-2.amazonaws.com/bucketplace-coding-test/cards/page_1.json";
+    axios
+      .get(url)
+      .then(res => {
+        console.log("FETCH LIST ARRAY SUCCESS", res.data);
+        this.setState({
+          list: res.data
+        });
+      })
+      .catch(err => {
+        console.log("FETCH LIST ERROR", err);
+      });
+  }
+
   render() {
-    const testList = [
-      {
-        userImg:
-          "https://calibershoes.com/Modules/eCommerce/images/default-img.png",
-        userName: "Lela Thomas",
-        img:
-          "https://images.unsplash.com/photo-1519710164239-da123dc03ef4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=634&q=80"
-      },
-      {
-        userImg:
-          "https://calibershoes.com/Modules/eCommerce/images/default-img.png",
-        userName: "Lela Thomas",
-        img:
-          "https://images.unsplash.com/photo-1519710164239-da123dc03ef4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=634&q=80"
-      },
-      {
-        userImg:
-          "https://calibershoes.com/Modules/eCommerce/images/default-img.png",
-        userName: "Lela Thomas",
-        img:
-          "https://images.unsplash.com/photo-1519710164239-da123dc03ef4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=634&q=80"
-      },
-      {
-        userImg:
-          "https://calibershoes.com/Modules/eCommerce/images/default-img.png",
-        userName: "Lela Thomas",
-        img:
-          "https://images.unsplash.com/photo-1519710164239-da123dc03ef4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=634&q=80"
-      }
-    ];
-    return <Contents list={testList} />;
+    const { list } = this.state;
+    return <Contents list={list} />;
   }
 }
 

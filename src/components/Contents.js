@@ -4,11 +4,18 @@ import Post from "./Post";
 import styled from "styled-components";
 
 const Contents = ({ list }) => {
-  const pics = list.map(pic => {
-    return <Post userImg={pic.userImg} userName={pic.userName} img={pic.img} />;
+  const postList = list.map(post => {
+    return (
+      <Post
+        key={post.id}
+        userImg={post.profile_image_url}
+        userName={post.nickname}
+        img={post.image_url}
+      />
+    );
   });
 
-  return <ContentsBox>{pics}</ContentsBox>;
+  return <ContentsBox>{postList}</ContentsBox>;
 };
 
 const ContentsBox = styled.main`
